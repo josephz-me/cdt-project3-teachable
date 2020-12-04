@@ -182,8 +182,7 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-    let value = random(10, 150);
-    // let m = map(value, 0, 100, 0, width);
+    let value = random(30, 150);
     video.size(320 / value, 240 / value);
     // video.size(320 / 10, 240 / 10);
     video.loadPixels();
