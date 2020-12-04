@@ -29,7 +29,7 @@ let clientPixels;
 let clientImages = [];
 
 function setup() {
-  // socket = io.connect("http://localhost:3000");
+  //socket = io.connect("http://localhost:3000");
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
 
   socket.on("identifyUser", () => {
@@ -42,16 +42,18 @@ function setup() {
     for (pixel in clientPixels) {
       let drawnPixel = clientPixels[pixel];
 
-      var raw = new Image();
-      raw.src = drawnPixel.img; // base64 data here
-      // console.log(`Pixel: ${pixel}, ${raw.src.slice(0, 40)}`);
-
-      raw.onload = function () {
-        img = createImage(raw.width, raw.height);
-        img.drawingContext.drawImage(raw, 0, 0);
-
-        clientImages[pixel] = img;
-      };
+      //if (! (pixel in clientImages)) {
+        var raw = new Image();
+        raw.src = drawnPixel.img; // base64 data here
+        // console.log(`Pixel: ${pixel}, ${raw.src.slice(0, 40)}`);
+  
+        raw.onload = function () {
+          img = createImage(raw.width, raw.height);
+          img.drawingContext.drawImage(raw, 0, 0);
+  
+          clientImages[pixel] = img;
+        };
+      //}
     }
     // for (let i = 0; i < clientPixels.length; i++) {
     //   let drawnPixel = clientPixels[i];
