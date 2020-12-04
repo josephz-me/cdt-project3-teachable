@@ -28,8 +28,8 @@ let clientPixels;
 
 let clientImages = [];
 
-// function setup() {
-//   socket = io.connect("http://localhost:3000");
+function setup() {
+  //   socket = io.connect("http://localhost:3000");
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
 
   socket.on("identifyUser", () => {
