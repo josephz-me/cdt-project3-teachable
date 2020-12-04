@@ -30,7 +30,7 @@ let clientImages = [];
 
 function setup() {
   // socket = io.connect("http://localhost:3000");
-  socket = io.connect("https://damp-earth-30526.herokuapp.com");
+  socket = io.connect("https://morning-shore-37084.herokuapp.com/");
   //welcome the user
   // socket.on("welcome", (data) => {
   //   console.log("welcome user: " + data);
