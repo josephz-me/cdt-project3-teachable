@@ -1,6 +1,7 @@
 let express = require("express");
 let app = express();
-let server = app.listen(3000);
+// let server = app.listen(3000);
+let server = app.listen(process.env.PORT);
 let colorsAvailable = [
   [248, 203, 200],
   [249, 123, 106],
