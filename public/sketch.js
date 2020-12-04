@@ -28,13 +28,9 @@ let clientPixels;
 
 let clientImages = [];
 
-function setup() {
-  // socket = io.connect("http://localhost:3000");
+// function setup() {
+//   socket = io.connect("http://localhost:3000");
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
-  //welcome the user
-  // socket.on("welcome", (data) => {
-  //   console.log("welcome user: " + data);
-  // });
 
   socket.on("identifyUser", () => {
     socket.emit("foundUser", label);
@@ -186,8 +182,10 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-
-    video.size(3, 2);
+    let value = random(10, 150);
+    // let m = map(value, 0, 100, 0, width);
+    video.size(320 / value, 240 / value);
+    // video.size(320 / 10, 240 / 10);
     video.loadPixels();
     const image64 = video.canvas.toDataURL();
     //console.log(image64);
