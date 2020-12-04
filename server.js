@@ -1,7 +1,10 @@
 let express = require("express");
 let app = express();
+app.use(express.static("public"));
 // let server = app.listen(3000);
 let server = app.listen(process.env.PORT);
+let socket = require("socket.io");
+
 let colorsAvailable = [
   [248, 203, 200],
   [249, 123, 106],
@@ -15,8 +18,6 @@ let colorsAvailable = [
 ];
 let playerToColor = {};
 
-app.use(express.static("public"));
-let socket = require("socket.io");
 let io = socket(server);
 
 io.sockets.on("connection", newConnection);
