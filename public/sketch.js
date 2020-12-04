@@ -25,6 +25,7 @@ function preload() {
 
 let socket;
 let clientPixels;
+
 let clientImages = [];
 
 function setup() {
@@ -40,6 +41,7 @@ function setup() {
 
   socket.on("heartbeatPixels", (data) => {
     clientPixels = data;
+
     for (pixel in clientPixels) {
       let drawnPixel = clientPixels[pixel];
 
@@ -74,6 +76,7 @@ function setup() {
 
   createCanvas(windowWidth, windowHeight);
   video = createCapture(VIDEO);
+
   video.size(320 / 10, 240 / 10);
   //video.hide();
 
@@ -88,7 +91,6 @@ function setup() {
 }
 
 let clicked = false;
-
 function draw() {
   background(0);
 
@@ -98,6 +100,9 @@ function draw() {
 
   for (playerNum in allClientPlayers) {
     let drawnPlayer = allClientPlayers[playerNum];
+
+    // drawnPlayer.show();
+
     push();
     stroke(...drawnPlayer.color);
     fill(...drawnPlayer.color, 50);
@@ -112,175 +117,181 @@ function draw() {
   }
 
   //image(flippedVideo, 0, 0, 320, 240);
-  // for (pixel in clientPixels) {
+  for (pixel in clientPixels) {
+    if (typeof clientPixels !== "undefined") {
+      for (let i = 0; i < clientPixels.length; i++) {
+        let drawnPixel = clientPixels[i];
+        let pixelImage;
 
-  if (typeof clientPixels !== "undefined") {
-    for (let i = 0; i < clientPixels.length; i++) {
-      let drawnPixel = clientPixels[i];
-      let pixelImage;
+        pixelImage = clientImages[i.toString()];
 
-      pixelImage = clientImages[i.toString()];
-
-      if (pixelImage != undefined) {
-        image(
-          pixelImage,
-          drawnPixel.x,
-          drawnPixel.y,
-          drawnPixel.size,
-          drawnPixel.size
-        ); // draw the image, etc here
-      } else {
-        // console.log("failed:", i, " is ", drawnPixel);
-      }
-    }
-  }
-
-  // Draw the label
-  fill(255);
-  textSize(16);
-  textAlign(CENTER);
-  text(label, width / 2, height - 4);
-}
-
-// Get a prediction for the current video frame
-function classifyVideo() {
-  flippedVideo = ml5.flipImage(video);
-  classifier.classify(flippedVideo, gotResult);
-  flippedVideo.remove();
-}
-
-// When we get a result
-function gotResult(error, results) {
-  // If there is an error
-  if (error) {
-    console.error(error);
-    return;
-  }
-  // The results are in an array ordered by confidence.
-  // console.log(results[0]);
-  label = results[0].label;
-  // Classifiy again!
-  classifyVideo();
-}
-
-function mousePressed() {
-  player.clickPixel(mouseX, mouseY);
-  return false;
-}
-
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    player.moveLeft();
-  } else if (keyCode === RIGHT_ARROW) {
-    player.moveRight();
-  } else if (keyCode === UP_ARROW) {
-    player.moveUp();
-  } else if (keyCode === DOWN_ARROW) {
-    player.moveDown();
-  } else if (keyCode === ENTER) {
-    // let currentImage = flippedVideo
-
-    //Webcam capture
-
-    video.size(3, 2);
-    video.loadPixels();
-    const image64 = video.canvas.toDataURL();
-    //console.log(image64);
-
-    let currentPixel = {
-      color: player.color,
-      size: w,
-      x: player.x * player.w + player.xmargin,
-      y: player.y * player.w + player.ymargin,
-      img: image64,
-    };
-    socket.emit("relayImage", currentPixel);
-  }
-}
-
-function drawGrid(grid, xmargin, ymargin, w) {
-  push();
-  fill(200);
-  stroke(0);
-  for (let i = 0; i < grid; i++) {
-    for (let j = 0; j < grid; j++) {
-      rect(i * w + xmargin, j * w + ymargin, w, w);
-    }
-  }
-  pop();
-}
-
-class Player {
-  constructor(x, y, xmargin, ymargin, w, grid, color, id) {
-    this.x = x;
-    this.y = y;
-    this.xmargin = xmargin;
-    this.ymargin = ymargin;
-    this.w = w;
-    this.grid = grid;
-    this.color = color;
-    this.id = id;
-  }
-
-  show() {
-    stroke(...this.color);
-    fill(...this.color);
-    rect(this.x * this.w + this.xmargin, this.y * this.w + this.ymargin, w, w);
-  }
-
-  clickPixel(mouseX, mouseY) {
-    // console.log("mouseX:", mouseX, "mouseY:", mouseY);
-    for (let i = 0; i < this.grid; i++) {
-      let lowX = i * this.w + this.xmargin;
-      let highX = lowX + this.w;
-      // console.log("lowX:", lowX, "highX", highX);
-      for (let j = 0; j < this.grid; j++) {
-        let lowY = j * this.w + this.ymargin;
-        let highY = lowY + this.w;
-        // console.log("lowY:", lowY, "highY:", highY);
-        if (
-          mouseX >= lowX &&
-          mouseX <= highX &&
-          mouseY >= lowY &&
-          mouseY <= highY
-        ) {
-          console.log("bye");
-          this.x = i;
-          this.y = j;
+        if (pixelImage != undefined) {
+          image(
+            pixelImage,
+            drawnPixel.x,
+            drawnPixel.y,
+            drawnPixel.size,
+            drawnPixel.size
+          ); // draw the image, etc here
+        } else {
+          // console.log("failed:", i, " is ", drawnPixel);
         }
       }
     }
+
+    // Draw the label
+    fill(255);
+    textSize(16);
+    textAlign(CENTER);
+    text(label, width / 2, height - 4);
   }
 
-  moveRight() {
-    if (this.x >= this.grid - 1) {
-      this.x = 0;
-    } else {
-      this.x += 1;
+  // Get a prediction for the current video frame
+  function classifyVideo() {
+    flippedVideo = ml5.flipImage(video);
+    classifier.classify(flippedVideo, gotResult);
+    flippedVideo.remove();
+  }
+
+  // When we get a result
+  function gotResult(error, results) {
+    // If there is an error
+    if (error) {
+      console.error(error);
+      return;
+    }
+    // The results are in an array ordered by confidence.
+    // console.log(results[0]);
+    label = results[0].label;
+    // Classifiy again!
+    classifyVideo();
+  }
+
+  function mousePressed() {
+    player.clickPixel(mouseX, mouseY);
+    return false;
+  }
+
+  function keyPressed() {
+    if (keyCode === LEFT_ARROW) {
+      player.moveLeft();
+    } else if (keyCode === RIGHT_ARROW) {
+      player.moveRight();
+    } else if (keyCode === UP_ARROW) {
+      player.moveUp();
+    } else if (keyCode === DOWN_ARROW) {
+      player.moveDown();
+    } else if (keyCode === ENTER) {
+      // let currentImage = flippedVideo
+
+      //Webcam capture
+
+      video.size(3, 2);
+      video.loadPixels();
+      const image64 = video.canvas.toDataURL();
+      //console.log(image64);
+
+      let currentPixel = {
+        color: player.color,
+        size: w,
+        x: player.x * player.w + player.xmargin,
+        y: player.y * player.w + player.ymargin,
+
+        img: image64,
+      };
+      socket.emit("relayImage", currentPixel);
     }
   }
 
-  moveLeft() {
-    if (this.x <= 0) {
-      this.x = this.grid - 1;
-    } else {
-      this.x -= 1;
+  function drawGrid(grid, xmargin, ymargin, w) {
+    push();
+    fill(200);
+    stroke(0);
+    for (let i = 0; i < grid; i++) {
+      for (let j = 0; j < grid; j++) {
+        rect(i * w + xmargin, j * w + ymargin, w, w);
+      }
     }
+    pop();
   }
 
-  moveUp() {
-    if (this.y <= 0) {
-      this.y = this.grid - 1;
-    } else {
-      this.y -= 1;
+  class Player {
+    constructor(x, y, xmargin, ymargin, w, grid, color, id) {
+      this.x = x;
+      this.y = y;
+      this.xmargin = xmargin;
+      this.ymargin = ymargin;
+      this.w = w;
+      this.grid = grid;
+      this.color = color;
+      this.id = id;
     }
-  }
 
-  moveDown() {
-    if (this.y >= this.grid - 1) {
-      this.y = 0;
-    } else {
-      this.y += 1;
+    show() {
+      stroke(...this.color);
+      fill(...this.color);
+      rect(
+        this.x * this.w + this.xmargin,
+        this.y * this.w + this.ymargin,
+        w,
+        w
+      );
+    }
+
+    clickPixel(mouseX, mouseY) {
+      // console.log("mouseX:", mouseX, "mouseY:", mouseY);
+      for (let i = 0; i < this.grid; i++) {
+        let lowX = i * this.w + this.xmargin;
+        let highX = lowX + this.w;
+        // console.log("lowX:", lowX, "highX", highX);
+        for (let j = 0; j < this.grid; j++) {
+          let lowY = j * this.w + this.ymargin;
+          let highY = lowY + this.w;
+          // console.log("lowY:", lowY, "highY:", highY);
+          if (
+            mouseX >= lowX &&
+            mouseX <= highX &&
+            mouseY >= lowY &&
+            mouseY <= highY
+          ) {
+            console.log("bye");
+            this.x = i;
+            this.y = j;
+          }
+        }
+      }
+    }
+
+    moveRight() {
+      if (this.x >= this.grid - 1) {
+        this.x = 0;
+      } else {
+        this.x += 1;
+      }
+    }
+
+    moveLeft() {
+      if (this.x <= 0) {
+        this.x = this.grid - 1;
+      } else {
+        this.x -= 1;
+      }
+    }
+
+    moveUp() {
+      if (this.y <= 0) {
+        this.y = this.grid - 1;
+      } else {
+        this.y -= 1;
+      }
+    }
+
+    moveDown() {
+      if (this.y >= this.grid - 1) {
+        this.y = 0;
+      } else {
+        this.y += 1;
+      }
     }
   }
 }

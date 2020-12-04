@@ -43,6 +43,7 @@ function Pixel(color, size, x, y, img) {
   this.size = size;
   this.x = x;
   this.y = y;
+
   this.img = img;
 }
 
