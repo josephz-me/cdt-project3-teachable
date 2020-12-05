@@ -28,6 +28,14 @@ let clientPixels;
 
 let clientImages = [];
 
+function saveImage(raw, pixel) {
+  return function () {
+    var img = createImage(raw.width, raw.height);
+    img.drawingContext.drawImage(raw, 0, 0);
+    clientImages[pixel] = img;
+  }
+}
+
 function setup() {
   //socket = io.connect("http://localhost:3000");
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
@@ -42,31 +50,14 @@ function setup() {
     for (pixel in clientPixels) {
       let drawnPixel = clientPixels[pixel];
 
-      //if (! (pixel in clientImages)) {
-        var raw = new Image();
+      if (! (pixel in clientImages)) {
+        let raw = new Image();
         raw.src = drawnPixel.img; // base64 data here
-        // console.log(`Pixel: ${pixel}, ${raw.src.slice(0, 40)}`);
-  
-        raw.onload = function () {
-          img = createImage(raw.width, raw.height);
-          img.drawingContext.drawImage(raw, 0, 0);
-  
-          clientImages[pixel] = img;
-        };
-      //}
-    }
-    // for (let i = 0; i < clientPixels.length; i++) {
-    //   let drawnPixel = clientPixels[i];
+        console.log(`Out + Pixel: ${pixel}, ${raw.src.slice(raw.src.length-40, raw.src.length-1)}`);
 
-    //   var raw = new Image();
-    //   raw.src = drawnPixel.img; // base64 data here
-    //   raw.onload = function () {
-    //     console.log(i);
-    //     let img = createImage(raw.width, raw.height);
-    //     img.drawingContext.drawImage(raw, 0, 0);
-    //     clientImages[i] = img;
-    //   };
-    // }
+        raw.onload = saveImage(raw, pixel);
+      }
+    }
   });
 
   socket.on("heartbeatPlayers", (data) => {
@@ -91,7 +82,7 @@ function setup() {
 
 let clicked = false;
 function draw() {
-  background(0);
+  background(0,0,0);
 
   //Grid
   drawGrid(grid, xmargin, ymargin, w);
@@ -116,27 +107,46 @@ function draw() {
   }
 
   //image(flippedVideo, 0, 0, 320, 240);
-  for (pixel in clientPixels) {
-    if (typeof clientPixels !== "undefined") {
-      for (let i = 0; i < clientPixels.length; i++) {
-        let drawnPixel = clientPixels[i];
-        let pixelImage;
+  // for (pixel in clientPixels) {
+  //   if (typeof clientPixels !== "undefined") {
+  //     for (let i = 0; i < clientPixels.length; i++) {
+  //       let drawnPixel = clientPixels[i];
+  //       let pixelImage;
 
-        pixelImage = clientImages[i.toString()];
+  //       pixelImage = clientImages[i.toString()];
 
-        if (pixelImage != undefined) {
-          image(
-            pixelImage,
-            drawnPixel.x,
-            drawnPixel.y,
-            drawnPixel.size,
-            drawnPixel.size
-          ); // draw the image, etc here
-        } else {
-          // console.log("failed:", i, " is ", drawnPixel);
-        }
-      }
+  //       if (pixelImage != undefined) {
+  //         image(
+  //           pixelImage,
+  //           drawnPixel.x,
+  //           drawnPixel.y,
+  //           drawnPixel.size,
+  //           drawnPixel.size
+  //         ); // draw the image, etc here
+  //       } else {
+  //         // console.log("failed:", i, " is ", drawnPixel);
+  //       }
+  //     }
+  //   }
+
+
+  for (key in clientImages) {
+    // console.log(key);
+    let drawnPixel = clientPixels[key];
+    let pixelImage = clientImages[key];
+
+    if (pixelImage != undefined) {
+      image(
+        pixelImage,
+        drawnPixel.x,
+        drawnPixel.y,
+        drawnPixel.size,
+        drawnPixel.size
+      ); // draw the image, etc here
+    } else {
+      // console.log("failed:", i, " is ", drawnPixel);
     }
+  }
 
     // Draw the label
     fill(255);
@@ -144,7 +154,7 @@ function draw() {
     textAlign(CENTER);
     text(label, width / 2, height - 4);
   }
-}
+
 // Get a prediction for the current video frame
 function classifyVideo() {
   flippedVideo = ml5.flipImage(video);
