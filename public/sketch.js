@@ -72,7 +72,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   video = createCapture(VIDEO);
 
-  video.size(320 / 10, 240 / 10);
+  video.size(320 / 3, 240 / 3);
   //video.hide();
 
   // flippedVideo = ml5.flipImage(video);
@@ -198,7 +198,8 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-    let value = random(2, 80);
+    // let value = random(2, 80);
+    let value = 1;
     video.size(320 / value, 240 / value);
     // video.size(320 / 10, 240 / 10);
     video.loadPixels();
