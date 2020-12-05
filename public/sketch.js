@@ -262,24 +262,24 @@ function gotResult(error, results) {
     label = results[0].label;
 
     previousLabel = label;
-    console.log(label);
+
     if (label === "Clapping") {
       pixelValue = 150;
       $(".clapping").addClass("highlighted");
       $(".knocking").removeClass("highlighted");
-      // $(".crumpling").removeClass("highlighted");
+      $(".crumpling").removeClass("highlighted");
     } else if (label === "Knocking") {
-      pixelValue = 20;
+      pixelValue = 80;
       $(".knocking").addClass("highlighted");
       $(".clapping").removeClass("highlighted");
-      // $(".crumpling").removeClass("highlighted");
+      $(".crumpling").removeClass("highlighted");
+    } else if (label === "Paper Crumpling") {
+      console.log($(".crumpling"));
+      pixelValue = 20;
+      $(".crumpling").addClass("highlighted");
+      $(".knocking").removeClass("highlighted");
+      $(".clapping").removeClass("highlighted");
     }
-    // else if (label === "Paper Crumpling") {
-    //   pixelValue = 20;
-    //   $(".crumpling").addClass("highlighted");
-    //   $(".knocking").removeClass("highlighted");
-    //   $(".clapping").removeClass("highlighted");
-    // }
   } else {
     label = previousLabel;
   }
