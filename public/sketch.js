@@ -1,12 +1,12 @@
 // Classifier Variable
 let classifier;
 // Model URL
-let imageModelURL = "https://teachablemachine.withgoogle.com/models/Q6nS6q6Sk/";
+let soundModel = "https://teachablemachine.withgoogle.com/models/kpZnktkoj/";
+let label = "listening...";
 // Video
 let video;
 let flippedVideo;
 // To store the classification
-let label = "";
 
 //Player
 let player;
@@ -20,7 +20,7 @@ let w = 50;
 
 // Load the model first
 function preload() {
-  classifier = ml5.imageClassifier(imageModelURL + "model.json");
+  classifier = ml5.soundClassifier(soundModel + "model.json");
 }
 
 let socket;
@@ -53,13 +53,6 @@ function setup() {
       if (!(pixel in clientImages)) {
         let raw = new Image();
         raw.src = drawnPixel.img; // base64 data here
-        console.log(
-          `Out + Pixel: ${pixel}, ${raw.src.slice(
-            raw.src.length - 40,
-            raw.src.length - 1
-          )}`
-        );
-
         raw.onload = saveImage(raw, pixel);
       }
     }
@@ -72,49 +65,26 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   video = createCapture(VIDEO);
 
-  video.size(320 / 5, 240 / 5);
+  video.size(320 / 20, 240 / 20);
   //video.hide();
 
   // flippedVideo = ml5.flipImage(video);
+
   // Start classifying
-  classifyVideo();
-
+  // The sound model will continuously listen to the microphone
+  classifier.classify(gotResult);
   //Set up player
-
   player = new Player(0, 0, xmargin, ymargin, w, grid, [300, 0, 0]); //color determined by socket
   socket.emit("startPlayer", player);
 }
 
 let clicked = false;
 function draw() {
-  background(0, 0, 0);
+  background("#111111");
 
   //Grid
   drawGrid(grid, xmargin, ymargin, w);
   socket.emit("updatePlayer", player);
-
-  //image(flippedVideo, 0, 0, 320, 240);
-  // for (pixel in clientPixels) {
-  //   if (typeof clientPixels !== "undefined") {
-  //     for (let i = 0; i < clientPixels.length; i++) {
-  //       let drawnPixel = clientPixels[i];
-  //       let pixelImage;
-
-  //       pixelImage = clientImages[i.toString()];
-
-  //       if (pixelImage != undefined) {
-  //         image(
-  //           pixelImage,
-  //           drawnPixel.x,
-  //           drawnPixel.y,
-  //           drawnPixel.size,
-  //           drawnPixel.size
-  //         ); // draw the image, etc here
-  //       } else {
-  //         // console.log("failed:", i, " is ", drawnPixel);
-  //       }
-  //     }
-  //   }
 
   for (key in clientImages) {
     // console.log(key);
@@ -159,31 +129,12 @@ function draw() {
   text(label, width / 2, height - 4);
 }
 
-// Get a prediction for the current video frame
-function classifyVideo() {
-  flippedVideo = ml5.flipImage(video);
-  classifier.classify(flippedVideo, gotResult);
-  flippedVideo.remove();
-}
-
-// When we get a result
-function gotResult(error, results) {
-  // If there is an error
-  if (error) {
-    console.error(error);
-    return;
-  }
-  // The results are in an array ordered by confidence.
-  // console.log(results[0]);
-  label = results[0].label;
-  // Classifiy again!
-  classifyVideo();
-}
-
 function mousePressed() {
   player.clickPixel(mouseX, mouseY);
   return false;
 }
+
+let pixelValue = 20;
 
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
@@ -198,9 +149,8 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-    let value = random(2, 80);
-    // let value = 1;
-    video.size(320 / value, 240 / value);
+    console.log(pixelValue);
+    video.size(320 / pixelValue, 240 / pixelValue);
     video.loadPixels();
     const image64 = video.canvas.toDataURL();
     //console.log(image64);
@@ -219,8 +169,8 @@ function keyPressed() {
 
 function drawGrid(grid, xmargin, ymargin, w) {
   push();
-  fill(50);
-  stroke(2);
+  stroke("white");
+  fill("#111111");
   for (let i = 0; i < grid; i++) {
     for (let j = 0; j < grid; j++) {
       rect(i * w + xmargin, j * w + ymargin, w, w);
@@ -301,5 +251,33 @@ class Player {
     } else {
       this.y += 1;
     }
+  }
+}
+
+// The model recognizing a sound will trigger this event
+let previousLabel;
+
+function gotResult(error, results) {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  // The results are in an array ordered by confidence.
+
+  if (results[0].confidence > 0.75) {
+    label = results[0].label;
+    previousLabel = label;
+    console.log(label);
+    if (label === "Clapping") {
+      pixelValue = 150;
+      $(".clapping").addClass("highlighted");
+      $(".talking").removeClass("highlighted");
+    } else if (label === "Talking") {
+      pixelValue = 20;
+      $(".talking").addClass("highlighted");
+      $(".clapping").removeClass("highlighted");
+    }
+  } else {
+    label = previousLabel;
   }
 }
