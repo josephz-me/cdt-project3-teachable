@@ -93,24 +93,6 @@ function draw() {
   drawGrid(grid, xmargin, ymargin, w);
   socket.emit("updatePlayer", player);
 
-  for (playerNum in allClientPlayers) {
-    let drawnPlayer = allClientPlayers[playerNum];
-
-    // drawnPlayer.show();
-
-    push();
-    stroke(...drawnPlayer.color);
-    fill(...drawnPlayer.color, 50);
-    strokeWeight(8);
-    rect(
-      drawnPlayer.x * drawnPlayer.w + drawnPlayer.xmargin,
-      drawnPlayer.y * drawnPlayer.w + drawnPlayer.ymargin,
-      w,
-      w
-    );
-    pop();
-  }
-
   //image(flippedVideo, 0, 0, 320, 240);
   // for (pixel in clientPixels) {
   //   if (typeof clientPixels !== "undefined") {
@@ -150,6 +132,24 @@ function draw() {
     } else {
       // console.log("failed:", i, " is ", drawnPixel);
     }
+  }
+
+  for (playerNum in allClientPlayers) {
+    let drawnPlayer = allClientPlayers[playerNum];
+
+    // drawnPlayer.show();
+
+    push();
+    stroke(...drawnPlayer.color);
+    fill(...drawnPlayer.color, 50);
+    strokeWeight(8);
+    rect(
+      drawnPlayer.x * drawnPlayer.w + drawnPlayer.xmargin,
+      drawnPlayer.y * drawnPlayer.w + drawnPlayer.ymargin,
+      w,
+      w
+    );
+    pop();
   }
 
   // Draw the label
@@ -198,7 +198,7 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-    let value = random(30, 150);
+    let value = random(10, 80);
     video.size(320 / value, 240 / value);
     // video.size(320 / 10, 240 / 10);
     video.loadPixels();
