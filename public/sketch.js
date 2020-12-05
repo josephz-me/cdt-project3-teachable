@@ -86,7 +86,6 @@ function draw() {
   socket.emit("updatePlayer", player);
 
   for (key in clientImages) {
-    // console.log(key);
     let drawnPixel = clientPixels[key];
     let pixelImage = clientImages[key];
 
@@ -148,11 +147,9 @@ function keyPressed() {
     // let currentImage = flippedVideo
 
     //Webcam capture
-    console.log(pixelValue);
     video.size(320 / pixelValue, 240 / pixelValue);
     video.loadPixels();
     const image64 = video.canvas.toDataURL();
-    //console.log(image64);
 
     let currentPixel = {
       color: player.color,
@@ -197,7 +194,6 @@ class Player {
   }
 
   clickPixel(mouseX, mouseY) {
-    // console.log("mouseX:", mouseX, "mouseY:", mouseY);
     for (let i = 0; i < this.grid; i++) {
       let lowX = i * this.w + this.xmargin;
       let highX = lowX + this.w;
@@ -212,7 +208,6 @@ class Player {
           mouseY >= lowY &&
           mouseY <= highY
         ) {
-          console.log("bye");
           this.x = i;
           this.y = j;
         }
@@ -262,7 +257,7 @@ function gotResult(error, results) {
     return;
   }
   // The results are in an array ordered by confidence.
-  console.log(results);
+  // console.log(results);
   if (results[0].confidence > 0.75) {
     label = results[0].label;
 
@@ -271,16 +266,20 @@ function gotResult(error, results) {
     if (label === "Clapping") {
       pixelValue = 150;
       $(".clapping").addClass("highlighted");
-      $(".highlighted").removeClass("highlighted");
-    } else if (label === "crumpling") {
+      $(".knocking").removeClass("highlighted");
+      // $(".crumpling").removeClass("highlighted");
+    } else if (label === "Knocking") {
       pixelValue = 20;
       $(".knocking").addClass("highlighted");
-      $(".highlighted").removeClass("highlighted");
-    } else if (label === "Paper Crumpling") {
-      pixelValue = 20;
-      $(".crumpling").addClass("highlighted");
-      $(".highlighted").removeClass("highlighted");
+      $(".clapping").removeClass("highlighted");
+      // $(".crumpling").removeClass("highlighted");
     }
+    // else if (label === "Paper Crumpling") {
+    //   pixelValue = 20;
+    //   $(".crumpling").addClass("highlighted");
+    //   $(".knocking").removeClass("highlighted");
+    //   $(".clapping").removeClass("highlighted");
+    // }
   } else {
     label = previousLabel;
   }
