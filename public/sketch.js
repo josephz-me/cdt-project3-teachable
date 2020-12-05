@@ -15,7 +15,7 @@ let allClientPlayers;
 //Grid
 let grid = 15;
 let xmargin = 400;
-let ymargin = 200;
+let ymargin = 20;
 let w = 50;
 
 // Load the model first
@@ -33,7 +33,7 @@ function saveImage(raw, pixel) {
     var img = createImage(raw.width, raw.height);
     img.drawingContext.drawImage(raw, 0, 0);
     clientImages[pixel] = img;
-  }
+  };
 }
 
 function setup() {
@@ -50,10 +50,15 @@ function setup() {
     for (pixel in clientPixels) {
       let drawnPixel = clientPixels[pixel];
 
-      if (! (pixel in clientImages)) {
+      if (!(pixel in clientImages)) {
         let raw = new Image();
         raw.src = drawnPixel.img; // base64 data here
-        console.log(`Out + Pixel: ${pixel}, ${raw.src.slice(raw.src.length-40, raw.src.length-1)}`);
+        console.log(
+          `Out + Pixel: ${pixel}, ${raw.src.slice(
+            raw.src.length - 40,
+            raw.src.length - 1
+          )}`
+        );
 
         raw.onload = saveImage(raw, pixel);
       }
@@ -82,7 +87,7 @@ function setup() {
 
 let clicked = false;
 function draw() {
-  background(0,0,0);
+  background(0, 0, 0);
 
   //Grid
   drawGrid(grid, xmargin, ymargin, w);
@@ -129,7 +134,6 @@ function draw() {
   //     }
   //   }
 
-
   for (key in clientImages) {
     // console.log(key);
     let drawnPixel = clientPixels[key];
@@ -148,12 +152,12 @@ function draw() {
     }
   }
 
-    // Draw the label
-    fill(255);
-    textSize(16);
-    textAlign(CENTER);
-    text(label, width / 2, height - 4);
-  }
+  // Draw the label
+  fill(255);
+  textSize(16);
+  textAlign(CENTER);
+  text(label, width / 2, height - 4);
+}
 
 // Get a prediction for the current video frame
 function classifyVideo() {
@@ -215,8 +219,8 @@ function keyPressed() {
 
 function drawGrid(grid, xmargin, ymargin, w) {
   push();
-  fill(200);
-  stroke(0);
+  fill(50);
+  stroke(2);
   for (let i = 0; i < grid; i++) {
     for (let j = 0; j < grid; j++) {
       rect(i * w + xmargin, j * w + ymargin, w, w);
