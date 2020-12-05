@@ -1,7 +1,7 @@
 // Classifier Variable
 let classifier;
 // Model URL
-let soundModel = "https://teachablemachine.withgoogle.com/models/kpZnktkoj/";
+let soundModel = "https://teachablemachine.withgoogle.com/models/diLxkb-WT/";
 let label = "listening...";
 // Video
 let video;
@@ -37,7 +37,6 @@ function saveImage(raw, pixel) {
 }
 
 function setup() {
-  //socket = io.connect("http://localhost:3000");
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
 
   socket.on("identifyUser", () => {
@@ -263,19 +262,24 @@ function gotResult(error, results) {
     return;
   }
   // The results are in an array ordered by confidence.
-
+  console.log(results);
   if (results[0].confidence > 0.75) {
     label = results[0].label;
+
     previousLabel = label;
     console.log(label);
     if (label === "Clapping") {
       pixelValue = 150;
       $(".clapping").addClass("highlighted");
-      $(".talking").removeClass("highlighted");
-    } else if (label === "Talking") {
+      $(".highlighted").removeClass("highlighted");
+    } else if (label === "crumpling") {
       pixelValue = 20;
-      $(".talking").addClass("highlighted");
-      $(".clapping").removeClass("highlighted");
+      $(".knocking").addClass("highlighted");
+      $(".highlighted").removeClass("highlighted");
+    } else if (label === "Paper Crumpling") {
+      pixelValue = 20;
+      $(".crumpling").addClass("highlighted");
+      $(".highlighted").removeClass("highlighted");
     }
   } else {
     label = previousLabel;
