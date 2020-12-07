@@ -83,6 +83,9 @@ function newConnection(socket) {
       if (socket.id === allPlayers[i].id) {
         allPlayers[i].x = data.x;
         allPlayers[i].y = data.y;
+        allPlayers[i].w = data.w;
+        allPlayers[i].numCells = data.numCells;
+        //console.log("Server", allPlayers[i].w);
       }
     }
   });

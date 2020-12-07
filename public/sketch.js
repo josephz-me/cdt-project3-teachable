@@ -38,6 +38,7 @@ function saveImage(raw, pixel) {
 
 function setup() {
   socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
+  //socket = io.connect("http://localhost:3000");
 
   socket.on("identifyUser", () => {
     socket.emit("foundUser", label);
@@ -111,11 +112,12 @@ function draw() {
     stroke(...drawnPlayer.color);
     fill(...drawnPlayer.color, 50);
     strokeWeight(8);
+    console.log(drawnPlayer.w);
     rect(
-      drawnPlayer.x * drawnPlayer.w + drawnPlayer.xmargin,
-      drawnPlayer.y * drawnPlayer.w + drawnPlayer.ymargin,
-      w,
-      w
+      drawnPlayer.x * w + drawnPlayer.xmargin,
+      drawnPlayer.y * w + drawnPlayer.ymargin,
+      drawnPlayer.w,
+      drawnPlayer.w
     );
     pop();
   }
@@ -153,13 +155,25 @@ function keyPressed() {
 
     let currentPixel = {
       color: player.color,
-      size: w,
-      x: player.x * player.w + player.xmargin,
-      y: player.y * player.w + player.ymargin,
+      size: player.w,
+      x: player.x * w + player.xmargin,
+      y: player.y * w + player.ymargin,
 
       img: image64,
     };
     socket.emit("relayImage", currentPixel);
+  }
+  if (keyCode === 32) {
+    let brushSize = Math.floor(Math.random()*3);
+    console.log(brushSize);
+    if (brushSize == 0) {
+      player.sizePixelSmall();
+    } if (brushSize == 1) {
+      player.sizePixelMed();
+    } if (brushSize == 2) {
+      player.sizePixelLarge();
+    }
+    console.log("spacebar:",player.w);
   }
 }
 
@@ -179,9 +193,11 @@ class Player {
   constructor(x, y, xmargin, ymargin, w, grid, color, id) {
     this.x = x;
     this.y = y;
+    this.numCells = 1;
     this.xmargin = xmargin;
     this.ymargin = ymargin;
     this.w = w;
+    this.originalw = w;
     this.grid = grid;
     this.color = color;
     this.id = id;
@@ -195,12 +211,12 @@ class Player {
 
   clickPixel(mouseX, mouseY) {
     for (let i = 0; i < this.grid; i++) {
-      let lowX = i * this.w + this.xmargin;
-      let highX = lowX + this.w;
+      let lowX = i * this.originalw + this.xmargin;
+      let highX = lowX + this.originalw;
       // console.log("lowX:", lowX, "highX", highX);
       for (let j = 0; j < this.grid; j++) {
-        let lowY = j * this.w + this.ymargin;
-        let highY = lowY + this.w;
+        let lowY = j * this.originalw + this.ymargin;
+        let highY = lowY + this.originalw;
         // console.log("lowY:", lowY, "highY:", highY);
         if (
           mouseX >= lowX &&
@@ -216,7 +232,7 @@ class Player {
   }
 
   moveRight() {
-    if (this.x >= this.grid - 1) {
+    if (this.x >= this.grid - this.numCells) {
       this.x = 0;
     } else {
       this.x += 1;
@@ -225,7 +241,7 @@ class Player {
 
   moveLeft() {
     if (this.x <= 0) {
-      this.x = this.grid - 1;
+      this.x = this.grid - this.numCells;
     } else {
       this.x -= 1;
     }
@@ -233,20 +249,37 @@ class Player {
 
   moveUp() {
     if (this.y <= 0) {
-      this.y = this.grid - 1;
+      this.y = this.grid - this.numCells;
     } else {
       this.y -= 1;
     }
   }
 
   moveDown() {
-    if (this.y >= this.grid - 1) {
+    if (this.y >= this.grid - this.numCells) {
       this.y = 0;
     } else {
       this.y += 1;
     }
   }
-}
+
+  sizePixelSmall(){
+    this.w = this.originalw;
+    this.numCells = 1;
+  }
+  
+  sizePixelMed(){
+    console.log("medium");
+    this.w = this.originalw*2;
+    this.numCells = 2;
+  }
+
+  sizePixelLarge(){
+    console.log("large");
+    this.w = this.originalw*3;
+    this.numCells = 3;
+  }
+ }
 
 // The model recognizing a sound will trigger this event
 let previousLabel;
