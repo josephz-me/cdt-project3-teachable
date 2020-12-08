@@ -113,7 +113,6 @@ function draw() {
     stroke(...drawnPlayer.color);
     fill(...drawnPlayer.color, 50);
     strokeWeight(8);
-    console.log(drawnPlayer.w);
     rect(
       drawnPlayer.x * w + drawnPlayer.xmargin,
       drawnPlayer.y * w + drawnPlayer.ymargin,
@@ -176,7 +175,6 @@ function keyPressed() {
     if (brushSizeIndex == 2) {
       player.sizePixelLarge();
     }
-    console.log("spacebar:", player.w);
   }
 }
 
@@ -216,11 +214,9 @@ class Player {
     for (let i = 0; i < this.grid; i++) {
       let lowX = i * this.originalw + this.xmargin;
       let highX = lowX + this.originalw;
-      // console.log("lowX:", lowX, "highX", highX);
       for (let j = 0; j < this.grid; j++) {
         let lowY = j * this.originalw + this.ymargin;
         let highY = lowY + this.originalw;
-        // console.log("lowY:", lowY, "highY:", highY);
         if (
           mouseX >= lowX &&
           mouseX <= highX &&
@@ -293,7 +289,6 @@ function gotResult(error, results) {
     return;
   }
   // The results are in an array ordered by confidence.
-  // console.log(results);
   if (results[0].confidence > 0.75) {
     label = results[0].label;
 
