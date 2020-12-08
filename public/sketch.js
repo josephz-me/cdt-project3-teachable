@@ -1,7 +1,7 @@
 // Classifier Variable
 let classifier;
 // Model URL
-let soundModel = "https://teachablemachine.withgoogle.com/models/diLxkb-WT/";
+let soundModel = "https://teachablemachine.withgoogle.com/models/DQ1CwKt3W/";
 let label = "listening...";
 // Video
 let video;
@@ -15,8 +15,8 @@ let brushSizeIndex = 0;
 
 //Grid
 let grid = 15;
-let xmargin = 400;
-let ymargin = 20;
+let xmargin = 350;
+let ymargin = 40;
 let w = 50;
 
 // Load the model first
@@ -289,26 +289,18 @@ function gotResult(error, results) {
     return;
   }
   // The results are in an array ordered by confidence.
-  if (results[0].confidence > 0.75) {
+  if (results[0].confidence > 0.85) {
     label = results[0].label;
 
     previousLabel = label;
 
     if (label === "Clapping") {
-      pixelValue = 150;
+      pixelValue = 100;
       $(".clapping").addClass("highlighted");
-      $(".knocking").removeClass("highlighted");
-      $(".crumpling").removeClass("highlighted");
-    } else if (label === "Knocking") {
-      pixelValue = 80;
-      $(".knocking").addClass("highlighted");
-      $(".clapping").removeClass("highlighted");
-      $(".crumpling").removeClass("highlighted");
-    } else if (label === "Paper Crumpling") {
-      console.log($(".crumpling"));
-      pixelValue = 20;
-      $(".crumpling").addClass("highlighted");
-      $(".knocking").removeClass("highlighted");
+      $(".rustling").removeClass("highlighted");
+    } else if (label === "Rustling Paper") {
+      pixelValue = 40;
+      $(".rustling").addClass("highlighted");
       $(".clapping").removeClass("highlighted");
     }
   } else {
