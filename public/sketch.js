@@ -11,6 +11,7 @@ let flippedVideo;
 //Player
 let player;
 let allClientPlayers;
+let brushSizeIndex = 0;
 
 //Grid
 let grid = 15;
@@ -164,15 +165,15 @@ function keyPressed() {
     socket.emit("relayImage", currentPixel);
   }
   if (keyCode === 32) {
-    let brushSize = Math.floor(Math.random() * 3);
-    console.log(brushSize);
-    if (brushSize == 0) {
+    brushSizeIndex += 1;
+    brushSizeIndex = brushSizeIndex % 3;
+    if (brushSizeIndex == 0) {
       player.sizePixelSmall();
     }
-    if (brushSize == 1) {
+    if (brushSizeIndex == 1) {
       player.sizePixelMed();
     }
-    if (brushSize == 2) {
+    if (brushSizeIndex == 2) {
       player.sizePixelLarge();
     }
     console.log("spacebar:", player.w);
