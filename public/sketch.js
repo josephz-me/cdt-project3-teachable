@@ -37,7 +37,7 @@ function saveImage(raw, pixel) {
 }
 
 function setup() {
-  socket = io.connect("https://afternoon-mountain-16149.herokuapp.com/");
+  socket = io.connect("https://pixel-push.herokuapp.com/");
   //socket = io.connect("http://localhost:3000");
 
   socket.on("identifyUser", () => {
@@ -164,16 +164,18 @@ function keyPressed() {
     socket.emit("relayImage", currentPixel);
   }
   if (keyCode === 32) {
-    let brushSize = Math.floor(Math.random()*3);
+    let brushSize = Math.floor(Math.random() * 3);
     console.log(brushSize);
     if (brushSize == 0) {
       player.sizePixelSmall();
-    } if (brushSize == 1) {
+    }
+    if (brushSize == 1) {
       player.sizePixelMed();
-    } if (brushSize == 2) {
+    }
+    if (brushSize == 2) {
       player.sizePixelLarge();
     }
-    console.log("spacebar:",player.w);
+    console.log("spacebar:", player.w);
   }
 }
 
@@ -263,23 +265,23 @@ class Player {
     }
   }
 
-  sizePixelSmall(){
+  sizePixelSmall() {
     this.w = this.originalw;
     this.numCells = 1;
   }
-  
-  sizePixelMed(){
+
+  sizePixelMed() {
     console.log("medium");
-    this.w = this.originalw*2;
+    this.w = this.originalw * 2;
     this.numCells = 2;
   }
 
-  sizePixelLarge(){
+  sizePixelLarge() {
     console.log("large");
-    this.w = this.originalw*3;
+    this.w = this.originalw * 3;
     this.numCells = 3;
   }
- }
+}
 
 // The model recognizing a sound will trigger this event
 let previousLabel;
